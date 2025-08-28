@@ -1,57 +1,20 @@
 <?php
 
-use App\Models\Job;
-use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\JobController;
+use App\Http\Controllers\SessionUserController;
+use App\Http\Controllers\RegisterUserController;
 
-// Route::get('/', function () {
-//     return view('welcome');
-// });
+Route::view('/','home');
 
+Route::resource('/jobs',JobController::class);
 
-Route::get('/', function () {
-    return view('home');
-});
+Route::get('register',[ RegisterUserController::class,'create']);
+Route::post('register',[ RegisterUserController::class,'store']);
 
-Route::get('/jobs', function () {
-    $jobs = Job::with('employer')->latest()->paginate(3);
-    return view('jobs.index', [
-        'jobs' => $jobs
-    ]);
-});
-
-Route::get('/jobs/create', function () {
-    return view('jobs.create');
-});
-
-Route::post('/jobs/', function(){
-
-    request()->validate([
-        'title' =>'required|min:3',
-        'salary'=>'required'
-    ]);
-
-    Job::create([
-        'title' => request()->title,
-        'salary'=> request()->salary,
-        'employer_id'=> 1
-    ]);
-
-    return redirect('jobs');
-});
+Route::get('login',[ SessionUserController::class,'create']);
+Route::post('login',[ SessionUserController::class,'store']);
+Route::post('logout',[ SessionUserController::class,'destroy']);
 
 
-Route::get('/jobs/{id}', function ($id) {
-
-    $job = Job::find($id);
-    if (!$job) {
-        abort(404);
-    }
-    return view('jobs.show', ['job' => $job]);
-});
-
-Route::get('/contact', function () {
-    return view('contact');
-});
-
-
+Route::view('/contact','contact');
